@@ -11,8 +11,8 @@ static const char *const TAG = "hink_epaper";
 static const uint8_t LUT_SIZE_HINK = 30;
 
 static const uint8_t FULL_UPDATE_LUT[LUT_SIZE_HINK] = {0x02, 0x02, 0x01, 0x11, 0x12, 0x12, 0x22, 0x22, 0x66, 0x69,
-                                                            0x69, 0x59, 0x58, 0x99, 0x99, 0x88, 0x00, 0x00, 0x00, 0x00,
-                                                            0xF8, 0xB4, 0x13, 0x51, 0x35, 0x51, 0x51, 0x19, 0x01, 0x00};
+                                                       0x69, 0x59, 0x58, 0x99, 0x99, 0x88, 0x00, 0x00, 0x00, 0x00,
+                                                       0xF8, 0xB4, 0x13, 0x51, 0x35, 0x51, 0x51, 0x19, 0x01, 0x00};
 
 static const uint8_t PARTIAL_UPDATE_LUT[LUT_SIZE_HINK] = {
     0x10, 0x18, 0x18, 0x08, 0x18, 0x18, 0x08, 0x00, 0x00, 0x00, 0x00, 0x00, 0x00, 0x00, 0x00,
@@ -96,10 +96,10 @@ void HinkEPaper::end_data_() { this->disable(); }
 void HinkEPaper::on_safe_shutdown() { this->deep_sleep(); }
 
 // ========================================================
-//                          Type A
+//                          Model 1.54
 // ========================================================
 
-void HinkEPaper::initialize() {
+void HinkEPaper1P54IN::initialize() {
   // COMMAND DRIVER OUTPUT CONTROL
   this->command(0x01);
   this->data(this->get_height_internal() - 1);
@@ -128,27 +128,16 @@ void HinkEPaper::initialize() {
   this->command(0x11);
   this->data(0x03);  // from top left to bottom right
 }
-
-void HinkEPaper::dump_config() {
+void HinkEPaper1P54IN::dump_config() {
   LOG_DISPLAY("", "Hink E-Paper", this);
-  switch (this->model_) {
-    case HINK_EPAPER_1_54_IN:
-      ESP_LOGCONFIG(TAG, "  Model: 1.54in");
-      break;
-    case HINK_EPAPER_2_9_IN:
-      ESP_LOGCONFIG(TAG, "  Model: 2.9in");
-      break;
-    case HINK_EPAPER_4_2_IN:
-      ESP_LOGCONFIG(TAG, "  Model: 4.2in");
-      break;
-  }
+  ESP_LOGCONFIG(TAG, "  Model: 1.54in");
   ESP_LOGCONFIG(TAG, "  Full Update Every: %u", this->full_update_every_);
   LOG_PIN("  Reset Pin: ", this->reset_pin_);
   LOG_PIN("  DC Pin: ", this->dc_pin_);
   LOG_PIN("  Busy Pin: ", this->busy_pin_);
   LOG_UPDATE_INTERVAL(this);
 }
-void HOT HinkEPaper::display() {
+void HOT HinkEPaper1P54IN::display() {
   bool full_update = this->at_update_ == 0;
   bool prev_full_update = this->at_update_ == 1;
 
@@ -183,7 +172,7 @@ void HOT HinkEPaper::display() {
   this->command(0x4F);
   this->data(0x00);
   this->data(0x00);
-
+  
   if (!this->wait_until_idle_()) {
     this->status_set_warning();
     return;
@@ -206,42 +195,179 @@ void HOT HinkEPaper::display() {
 
   this->status_clear_warning();
 }
-int HinkEPaper::get_width_internal() {
-  switch (this->model_) {
-    case HINK_EPAPER_1_54_IN:
-      return 200;
-    case HINK_EPAPER_2_9_IN:
-      return 128;
-    case HINK_EPAPER_4_2_IN:
-      return 400;
-  }
-  return 0;
+int HinkEPaper1P54IN::get_width_internal() {
+  return 200;
 }
-int HinkEPaper::get_height_internal() {
-  switch (this->model_) {
-    case HINK_EPAPER_1_54_IN:
-      return 200;
-    case HINK_EPAPER_2_9_IN:
-      return 296;
-    case HINK_EPAPER_4_2_IN:
-      return 300;
-  }
-  return 0;
+int HinkEPaper1P54IN::get_height_internal() {
+  return 200;
 }
-void HinkEPaper::write_lut_(const uint8_t *lut, const uint8_t size) {
+void HinkEPaper1P54IN::write_lut_(const uint8_t *lut, const uint8_t size) {
   // COMMAND WRITE LUT REGISTER
   this->command(0x32);
   for (uint8_t i = 0; i < size; i++)
     this->data(lut[i]);
 }
-HinkEPaper::HinkEPaper(HinkEPaperModel model) : model_(model) {}
+HinkEPaper1P54IN::HinkEPaper(HinkEPaperModel model) : model_(model) {}
 void HinkEPaper::set_full_update_every(uint32_t full_update_every) {
   this->full_update_every_ = full_update_every;
 }
 
-uint32_t HinkEPaper::idle_timeout_() {
+uint32_t HinkEPaper1P54IN::idle_timeout_() {
   return HinkEPaper::idle_timeout_();
 }
+
+// ========================================================
+//                          Model 2.9
+// ========================================================
+
+void HinkEPaper2P9IN::initialize() {
+  // COMMAND DRIVER OUTPUT CONTROL
+  this->command(0x01);
+  this->data(this->get_height_internal() - 1);
+  this->data((this->get_height_internal() - 1) >> 8);
+  this->data(0x00);  // ? GD = 0, SM = 0, TB = 0
+
+  // COMMAND BOOSTER SOFT START CONTROL
+  this->command(0x0C);
+  this->data(0xD7);
+  this->data(0xD6);
+  this->data(0x9D);
+
+  // COMMAND WRITE VCOM REGISTER
+  this->command(0x2C);
+  this->data(0xA8);
+
+  // COMMAND SET DUMMY LINE PERIOD
+  this->command(0x3A);
+  this->data(0x1A);
+
+  // COMMAND SET GATE TIME
+  this->command(0x3B);
+  this->data(0x08);  // 2µs per row
+
+  // COMMAND DATA ENTRY MODE SETTING
+  this->command(0x11);
+  this->data(0x03);  // from top left to bottom right
+}
+void HinkEPaper2P9IN::dump_config() {
+  LOG_DISPLAY("", "Hink E-Paper", this);
+  ESP_LOGCONFIG(TAG, "  Model: 2.9in");
+  ESP_LOGCONFIG(TAG, "  Full Update Every: %u", this->full_update_every_);
+  LOG_PIN("  Reset Pin: ", this->reset_pin_);
+  LOG_PIN("  DC Pin: ", this->dc_pin_);
+  LOG_PIN("  Busy Pin: ", this->busy_pin_);
+  LOG_UPDATE_INTERVAL(this);
+}
+void HOT HinkEPaper2P9IN::display() {
+  bool full_update = this->at_update_ == 0;
+  bool prev_full_update = this->at_update_ == 1;
+
+  if (!this->wait_until_idle_()) {
+    this->status_set_warning();
+    return;
+  }
+
+  if (this->full_update_every_ >= 1) {
+    if (full_update != prev_full_update) {
+      this->write_lut_(full_update ? FULL_UPDATE_LUT : PARTIAL_UPDATE_LUT, LUT_SIZE_HINK);
+    }
+    this->at_update_ = (this->at_update_ + 1) % this->full_update_every_;
+  }
+
+  // Set x & y regions we want to write to (full)
+  // COMMAND SET RAM X ADDRESS START END POSITION
+  this->command(0x44);
+  this->data(0x00);
+  this->data((this->get_width_internal() - 1) >> 3);
+  // COMMAND SET RAM Y ADDRESS START END POSITION
+  this->command(0x45);
+  this->data(0x00);
+  this->data(0x00);
+  this->data(this->get_height_internal() - 1);
+  this->data((this->get_height_internal() - 1) >> 8);
+
+  // COMMAND SET RAM X ADDRESS COUNTER
+  this->command(0x4E);
+  this->data(0x00);
+  // COMMAND SET RAM Y ADDRESS COUNTER
+  this->command(0x4F);
+  this->data(0x00);
+  this->data(0x00);
+  
+  if (!this->wait_until_idle_()) {
+    this->status_set_warning();
+    return;
+  }
+
+  // COMMAND WRITE RAM
+  this->command(0x24);
+  this->start_data_();
+  this->write_array(this->buffer_, this->get_buffer_length_());
+  this->end_data_();
+
+  // COMMAND DISPLAY UPDATE CONTROL 2
+  this->command(0x22);
+  this->data(0xC4);
+
+  // COMMAND MASTER ACTIVATION
+  this->command(0x20);
+  // COMMAND TERMINATE FRAME READ WRITE
+  this->command(0xFF);
+
+  this->status_clear_warning();
+}
+int HinkEPaper2P9IN::get_width_internal() {
+  return 128;
+}
+int HinkEPaper2P9IN::get_height_internal() {
+  return 296;
+}
+void HinkEPaper2P9IN::write_lut_(const uint8_t *lut, const uint8_t size) {
+  // COMMAND WRITE LUT REGISTER
+  this->command(0x32);
+  for (uint8_t i = 0; i < size; i++)
+    this->data(lut[i]);
+}
+HinkEPaper2P9IN::HinkEPaper2P9IN(HinkEPaperModel model) : model_(model) {}
+void HinkEPaper2P9IN::set_full_update_every(uint32_t full_update_every) {
+  this->full_update_every_ = full_update_every;
+}
+
+uint32_t HinkEPaper2P9IN::idle_timeout_() {
+  return HinkEPaper::idle_timeout_();
+}
+
+// ========================================================
+//                          Model 4.2
+// ========================================================
+
+static const uint8_t LUT_VCOM_DC_4_2[] = {
+    0x00, 0x17, 0x00, 0x00, 0x00, 0x02, 0x00, 0x17, 0x17, 0x00, 0x00, 0x02, 0x00, 0x0A, 0x01,
+    0x00, 0x00, 0x01, 0x00, 0x0E, 0x0E, 0x00, 0x00, 0x02, 0x00, 0x00, 0x00, 0x00, 0x00, 0x00,
+    0x00, 0x00, 0x00, 0x00, 0x00, 0x00, 0x00, 0x00, 0x00, 0x00, 0x00, 0x00, 0x00, 0x00,
+};
+static const uint8_t LUT_WHITE_TO_WHITE_4_2[] = {
+    0x40, 0x17, 0x00, 0x00, 0x00, 0x02, 0x90, 0x17, 0x17, 0x00, 0x00, 0x02, 0x40, 0x0A,
+    0x01, 0x00, 0x00, 0x01, 0xA0, 0x0E, 0x0E, 0x00, 0x00, 0x02, 0x00, 0x00, 0x00, 0x00,
+    0x00, 0x00, 0x00, 0x00, 0x00, 0x00, 0x00, 0x00, 0x00, 0x00, 0x00, 0x00, 0x00, 0x00,
+};
+static const uint8_t LUT_BLACK_TO_WHITE_4_2[] = {
+    0x40, 0x17, 0x00, 0x00, 0x00, 0x02, 0x90, 0x17, 0x17, 0x00, 0x00, 0x02, 0x40, 0x0A,
+    0x01, 0x00, 0x00, 0x01, 0xA0, 0x0E, 0x0E, 0x00, 0x00, 0x02, 0x00, 0x00, 0x00, 0x00,
+    0x00, 0x00, 0x00, 0x00, 0x00, 0x00, 0x00, 0x00, 0x00, 0x00, 0x00, 0x00, 0x00, 0x00,
+};
+
+static const uint8_t LUT_BLACK_TO_BLACK_4_2[] = {
+    0x80, 0x17, 0x00, 0x00, 0x00, 0x02, 0x90, 0x17, 0x17, 0x00, 0x00, 0x02, 0x80, 0x0A,
+    0x01, 0x00, 0x00, 0x01, 0x50, 0x0E, 0x0E, 0x00, 0x00, 0x02, 0x00, 0x00, 0x00, 0x00,
+    0x00, 0x00, 0x00, 0x00, 0x00, 0x00, 0x00, 0x00, 0x00, 0x00, 0x00, 0x00, 0x00, 0x00,
+};
+
+static const uint8_t LUT_WHITE_TO_BLACK_4_2[] = {
+    0x80, 0x17, 0x00, 0x00, 0x00, 0x02, 0x90, 0x17, 0x17, 0x00, 0x00, 0x02, 0x80, 0x0A,
+    0x01, 0x00, 0x00, 0x01, 0x50, 0x0E, 0x0E, 0x00, 0x00, 0x02, 0x00, 0x00, 0x00, 0x00,
+    0x00, 0x00, 0x00, 0x00, 0x00, 0x00, 0x00, 0x00, 0x00, 0x00, 0x00, 0x00, 0x00, 0x00,
+};
 
 void HinkEPaper4P2In::initialize() {
 

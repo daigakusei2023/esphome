@@ -68,21 +68,21 @@ class HinkEPaper : public PollingComponent,
   virtual uint32_t idle_timeout_() { return 1000u; }  // NOLINT(readability-identifier-naming)
 };
 
-enum HinkEPaper {
+enum HinkEPaperModel {
   HINK_EPAPER_1_54_IN = 0,
   HINK_EPAPER_2_9_IN,
-  HINK_EPAPER_4_2_IN
+  HINK_EPAPER_4_2_IN,
 };
 
-class HinkEPaper : public HinkEPaper {
+class HinkEPaper1P54In : public HinkEPaper {
  public:
-  HinkEPaper(HinkEPaperModel model);
+  HinkEPaperType(HinkEPaperModel model);
 
   void initialize() override;
 
-  void dump_config() override;
-
   void display() override;
+
+  void dump_config() override;
 
   void deep_sleep() override {
     // COMMAND DEEP SLEEP MODE
@@ -105,8 +105,41 @@ class HinkEPaper : public HinkEPaper {
   uint32_t idle_timeout_() override;
 };
 
+class HinkEPaper2P9In : public HinkEPaper {
+ public:
+  HinkEPaperType(HinkEPaperModel model);
+  
+  void initialize() override;
+
+  void display() override;
+
+  void dump_config() override;
+
+  void deep_sleep() override {
+    // COMMAND DEEP SLEEP
+    this->command(0x07);
+    this->data(0xA5);  // check byte
+  }
+
+  void set_full_update_every(uint32_t full_update_every);
+
+ protected:
+  void write_lut_(const uint8_t *lut, uint8_t size);
+  
+  int get_width_internal() override;
+
+  int get_height_internal() override;
+
+  uint32_t full_update_every_{30};
+  uint32_t at_update_{0};
+  HinkEPaperModel model_;
+  uint32_t idle_timeout_() override;
+};
+
 class HinkEPaper4P2In : public HinkEPaper {
  public:
+  HinkEPaperType(HinkEPaperModel model);
+  
   void initialize() override;
 
   void display() override;
@@ -142,10 +175,19 @@ class HinkEPaper4P2In : public HinkEPaper {
     this->data(0xA5);  // check byte
   }
 
+  void set_full_update_every(uint32_t full_update_every);
+
  protected:
+  void write_lut_(const uint8_t *lut, uint8_t size);
+  
   int get_width_internal() override;
 
   int get_height_internal() override;
+
+  uint32_t full_update_every_{30};
+  uint32_t at_update_{0};
+  HinkEPaperModel model_;
+  uint32_t idle_timeout_() override;
 };
 
 }  // namespace hink_epaper
