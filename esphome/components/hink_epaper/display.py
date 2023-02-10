@@ -63,7 +63,7 @@ CONFIG_SCHEMA = cv.All(
 
 
 async def to_code(config):
-    model_type, model = MODELS[config[CONF_MODEL]]
+    model = MODELS[config[CONF_MODEL]]
     rhs = model.new()
     var = cg.Pvariable(config[CONF_ID], rhs, model)
 
