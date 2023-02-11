@@ -24,7 +24,7 @@ HinkEPaper1P54In = hink_epaper_ns.class_(
     "HinkEPaper1P54In", HinkEPaper
 )
 HinkEPaper2P9In = hink_epaper_ns.class_(
-    "HinkEPaper2P9InB", HinkEPaper
+    "HinkEPaper2P9In", HinkEPaper
 )
 HinkEPaper4P2In = hink_epaper_ns.class_(
     "HinkEPaper4P2In", HinkEPaper
