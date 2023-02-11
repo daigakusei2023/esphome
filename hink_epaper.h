@@ -76,7 +76,7 @@ enum HinkEPaperModel {
 
 class HinkEPaper1P54In : public HinkEPaper {
  public:
-  HinkEPaper1P54IN(HinkEPaperModel model);
+  HinkEPaper1P54In(HinkEPaperModel model);
 
   void initialize() override;
 
