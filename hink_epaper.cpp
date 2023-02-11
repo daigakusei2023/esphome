@@ -99,7 +99,7 @@ void HinkEPaper::on_safe_shutdown() { this->deep_sleep(); }
 //                          Model 1.54
 // ========================================================
 
-void HinkEPaper1P54IN::initialize() {
+void HinkEPaper1P54In::initialize() {
   // COMMAND DRIVER OUTPUT CONTROL
   this->command(0x01);
   this->data(this->get_height_internal() - 1);
@@ -128,7 +128,7 @@ void HinkEPaper1P54IN::initialize() {
   this->command(0x11);
   this->data(0x03);  // from top left to bottom right
 }
-void HinkEPaper1P54IN::dump_config() {
+void HinkEPaper1P54In::dump_config() {
   LOG_DISPLAY("", "Hink E-Paper", this);
   ESP_LOGCONFIG(TAG, "  Model: 1.54in");
   ESP_LOGCONFIG(TAG, "  Full Update Every: %u", this->full_update_every_);
@@ -137,7 +137,7 @@ void HinkEPaper1P54IN::dump_config() {
   LOG_PIN("  Busy Pin: ", this->busy_pin_);
   LOG_UPDATE_INTERVAL(this);
 }
-void HOT HinkEPaper1P54IN::display() {
+void HOT HinkEPaper1P54In::display() {
   bool full_update = this->at_update_ == 0;
   bool prev_full_update = this->at_update_ == 1;
 
@@ -195,24 +195,24 @@ void HOT HinkEPaper1P54IN::display() {
 
   this->status_clear_warning();
 }
-int HinkEPaper1P54IN::get_width_internal() {
+int HinkEPaper1P54In::get_width_internal() {
   return 200;
 }
-int HinkEPaper1P54IN::get_height_internal() {
+int HinkEPaper1P54In::get_height_internal() {
   return 200;
 }
-void HinkEPaper1P54IN::write_lut_(const uint8_t *lut, const uint8_t size) {
+void HinkEPaper1P54In::write_lut_(const uint8_t *lut, const uint8_t size) {
   // COMMAND WRITE LUT REGISTER
   this->command(0x32);
   for (uint8_t i = 0; i < size; i++)
     this->data(lut[i]);
 }
-HinkEPaper1P54IN::HinkEPaper(HinkEPaperModel model) : model_(model) {}
+HinkEPaper1P54In::HinkEPaper(HinkEPaperModel model) : model_(model) {}
 void HinkEPaper::set_full_update_every(uint32_t full_update_every) {
   this->full_update_every_ = full_update_every;
 }
 
-uint32_t HinkEPaper1P54IN::idle_timeout_() {
+uint32_t HinkEPaper1P54In::idle_timeout_() {
   return HinkEPaper::idle_timeout_();
 }
 
@@ -220,7 +220,7 @@ uint32_t HinkEPaper1P54IN::idle_timeout_() {
 //                          Model 2.9
 // ========================================================
 
-void HinkEPaper2P9IN::initialize() {
+void HinkEPaper2P9In::initialize() {
   // COMMAND DRIVER OUTPUT CONTROL
   this->command(0x01);
   this->data(this->get_height_internal() - 1);
@@ -249,7 +249,7 @@ void HinkEPaper2P9IN::initialize() {
   this->command(0x11);
   this->data(0x03);  // from top left to bottom right
 }
-void HinkEPaper2P9IN::dump_config() {
+void HinkEPaper2P9In::dump_config() {
   LOG_DISPLAY("", "Hink E-Paper", this);
   ESP_LOGCONFIG(TAG, "  Model: 2.9in");
   ESP_LOGCONFIG(TAG, "  Full Update Every: %u", this->full_update_every_);
@@ -258,7 +258,7 @@ void HinkEPaper2P9IN::dump_config() {
   LOG_PIN("  Busy Pin: ", this->busy_pin_);
   LOG_UPDATE_INTERVAL(this);
 }
-void HOT HinkEPaper2P9IN::display() {
+void HOT HinkEPaper2P9In::display() {
   bool full_update = this->at_update_ == 0;
   bool prev_full_update = this->at_update_ == 1;
 
@@ -316,24 +316,24 @@ void HOT HinkEPaper2P9IN::display() {
 
   this->status_clear_warning();
 }
-int HinkEPaper2P9IN::get_width_internal() {
+int HinkEPaper2P9In::get_width_internal() {
   return 128;
 }
-int HinkEPaper2P9IN::get_height_internal() {
+int HinkEPaper2P9In::get_height_internal() {
   return 296;
 }
-void HinkEPaper2P9IN::write_lut_(const uint8_t *lut, const uint8_t size) {
+void HinkEPaper2P9In::write_lut_(const uint8_t *lut, const uint8_t size) {
   // COMMAND WRITE LUT REGISTER
   this->command(0x32);
   for (uint8_t i = 0; i < size; i++)
     this->data(lut[i]);
 }
-HinkEPaper2P9IN::HinkEPaper2P9IN(HinkEPaperModel model) : model_(model) {}
-void HinkEPaper2P9IN::set_full_update_every(uint32_t full_update_every) {
+HinkEPaper2P9In::HinkEPaper2P9In(HinkEPaperModel model) : model_(model) {}
+void HinkEPaper2P9In::set_full_update_every(uint32_t full_update_every) {
   this->full_update_every_ = full_update_every;
 }
 
-uint32_t HinkEPaper2P9IN::idle_timeout_() {
+uint32_t HinkEPaper2P9In::idle_timeout_() {
   return HinkEPaper::idle_timeout_();
 }
 
