@@ -68,15 +68,15 @@ class HinkEPaper : public PollingComponent,
   virtual uint32_t idle_timeout_() { return 1000u; }  // NOLINT(readability-identifier-naming)
 };
 
-enum HinkEPaperModel {
-  HINK_EPAPER_1_54_IN = 0,
-  HINK_EPAPER_2_9_IN,
-  HINK_EPAPER_4_2_IN,
-};
+//enum HinkEPaperModel {
+//  HINK_EPAPER_1_54_IN = 0,
+//  HINK_EPAPER_2_9_IN,
+// HINK_EPAPER_4_2_IN,
+//};
 
 class HinkEPaper1P54In : public HinkEPaper {
  public:
-  HinkEPaper1P54In(HinkEPaperModel model);
+  //HinkEPaper1P54In(HinkEPaperModel model);
 
   void initialize() override;
 
@@ -101,13 +101,13 @@ class HinkEPaper1P54In : public HinkEPaper {
 
   uint32_t full_update_every_{30};
   uint32_t at_update_{0};
-  HinkEPaperModel model_;
+  //HinkEPaperModel model_;
   uint32_t idle_timeout_() override;
 };
 
 class HinkEPaper2P9In : public HinkEPaper {
  public:
-  HinkEPaper2P9In(HinkEPaperModel model);
+  //HinkEPaper2P9In(HinkEPaperModel model);
   
   void initialize() override;
 
@@ -132,13 +132,13 @@ class HinkEPaper2P9In : public HinkEPaper {
 
   uint32_t full_update_every_{30};
   uint32_t at_update_{0};
-  HinkEPaperModel model_;
+  //HinkEPaperModel model_;
   uint32_t idle_timeout_() override;
 };
 
 class HinkEPaper4P2In : public HinkEPaper {
  public:
-  HinkEPaper4P2In(HinkEPaperModel model);
+  //HinkEPaper4P2In(HinkEPaperModel model);
   
   void initialize() override;
 
@@ -186,7 +186,7 @@ class HinkEPaper4P2In : public HinkEPaper {
 
   uint32_t full_update_every_{30};
   uint32_t at_update_{0};
-  HinkEPaperModel model_;
+  //HinkEPaperModel model_;
   uint32_t idle_timeout_() override;
 };
 
